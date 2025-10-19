@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { ArrowRight, Users, Trophy, Calendar, Rocket, ChevronRight,FolderOpen, Quote } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import TypingHero from "../components/TypingHero";
 import { Code, Brain, Lightbulb, Puzzle, Calculator, TrendingUp, Menu, Share2, Shuffle } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const EventCard = ({ event, index }: { event: any; index: number }) => {
   const { isDark } = useTheme();
@@ -468,12 +469,11 @@ function AptitudeGraphic({ isDark }: { isDark: boolean }) {
 }
 
 
-// Updated features config with new gradient system
 const features = [
   {
     icon: <Code className="w-8 h-8" />,
     title: "Web Development",
-    subtitle: "Modern & Responsive",
+    subtitle: "(React, Node.js, Tailwind CSS...)",
     description: "Master modern web technologies and build stunning, responsive applications.",
     technologies: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Node.js"],
     bgGradient: "from-cyan-500/40 via-blue-800/10 to-cyan-600/20",
@@ -483,7 +483,7 @@ const features = [
   {
     icon: <Users className="w-8 h-8" />,
     title: "Data Structures & Algorithms",
-    subtitle: "Foundation Fundamentals",
+    subtitle: "(Python, Java, C++...)",
     description: "Build a rock-solid foundation in computer science fundamentals.",
     technologies: ["Python", "Java", "C++", "Algorithm Design", "Complexity Analysis"],
     bgGradient: "from-blue-400/20 via-purple-400/10 to-blue-600/20",
@@ -493,7 +493,7 @@ const features = [
   {
     icon: <Trophy className="w-8 h-8" />,
     title: "Aptitude & Reasoning",
-    subtitle: "Analytical Thinking",
+    subtitle: "(Quantitative, Verbal, Logical...)",
     description: "Sharpen your analytical thinking and logical reasoning skills.",
     technologies: ["Quantitative", "Verbal", "Logical", "Analytical", "Critical Thinking"],
     bgGradient: "from-purple-400/20 via-pink-400/10 to-purple-600/20",
@@ -587,6 +587,8 @@ const StatsSection = () => {
 
 const Home = () => {
   const { isDark } = useTheme();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeFeature, setActiveFeature] = useState(0);
 
@@ -608,6 +610,22 @@ const Home = () => {
 
   const scrollToFeature = (idx: number) => {
     featureRefs.current[idx]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const handleServicesClick = () => {
+    if (isAuthenticated) {
+      navigate('/domains');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleExploreDomainClick = () => {
+    if (isAuthenticated) {
+      navigate('/domains');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
@@ -650,14 +668,14 @@ const Home = () => {
           </p>
           <div className="pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link
-                to="/"
+              <button
+                onClick={handleServicesClick}
                 className="group relative px-6 py-3 bg-gray-800 text-white rounded-lg font-medium text-base hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 border border-gray-700"
               >
                 <span className="flex items-center space-x-2">
                   <span>Services</span>
                 </span>
-              </Link>
+              </button>
               <Link
                 to="/login"
                 className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium text-base hover:from-blue-400 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(66,153,225,0.3)]"
@@ -757,22 +775,21 @@ const Home = () => {
               ))}
             </div>
             
-     <Link
-  to={feature.link}
-  className={`inline-flex items-center font-medium transition-colors group ${
+     <button
+  onClick={handleExploreDomainClick}
+  className={`inline-flex items-center font-medium transition-colors group px-4 py-2 rounded-lg border ${
     idx === activeFeature
       ? isDark
-        ? "text-white"
-        : "text-indigo-700 from-indigo-600 to-purple-600 bg-clip-text text-transparent" 
-    
+        ? "text-white border-white/20 bg-white/10 hover:bg-white/20"
+        : "text-gray-900 border-gray-300 bg-gray-50 hover:bg-gray-100"
       : isDark
-        ? "text-blue-400 hover:text-blue-300"
-        : "text-blue-600 hover:text-blue-700"
+        ? "text-blue-400 hover:text-blue-300 border-blue-400/30 bg-blue-400/10 hover:bg-blue-400/20"
+        : "text-gray-700 hover:text-gray-900 border-gray-400 bg-gray-50 hover:bg-gray-100"
   }`}
 >
   <span>Explore Domain</span>
   <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-</Link>
+</button>
           </motion.div>
           
           <motion.div

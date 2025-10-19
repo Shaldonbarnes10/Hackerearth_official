@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Shield, CheckCircle, Sun, Moon, ChevronLeft, ChevronRight, Code, Cpu, Brain } from 'lucide-react';
+import { User, Shield, CheckCircle, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -16,34 +16,6 @@ const classNames = (...classes: (string | boolean | undefined | null)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
-// Domain-specific carousel images
-const carouselImages = [
-  {
-    light: 'https://images.unsplash.com/photo-1581276879432-15e50529f34b?w=800&h=1000&fit=crop',
-    dark: 'https://images.unsplash.com/photo-1581276879432-15e50529f34b?w=800&h=1000&fit=crop&auto=format&q=80',
-    title: 'Web Development',
-    description: 'Build modern, responsive web applications',
-    icon: <Code className="w-8 h-8 text-blue-400 mb-3" />,
-    gradient: 'from-blue-900/80 to-purple-900/60'
-  },
-  {
-    light: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=1000&fit=crop',
-    dark: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=1000&fit=crop&auto=format&q=80',
-    title: 'Data Structures & Algorithms',
-    description: 'Master problem-solving and algorithmic thinking',
-    icon: <Cpu className="w-8 h-8 text-green-400 mb-3" />,
-    gradient: 'from-green-900/80 to-blue-900/60'
-  },
-  {
-    light: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=1000&fit=crop',
-    dark: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=1000&fit=crop&auto=format&q=80',
-    title: 'Aptitude & Reasoning',
-    description: 'Develop critical thinking and analytical skills',
-    icon: <Brain className="w-8 h-8 text-purple-400 mb-3" />,
-    gradient: 'from-purple-900/80 to-pink-900/60'
-  }
-];
-
 const LoginPage: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
@@ -55,19 +27,9 @@ const LoginPage: React.FC = () => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  // Carousel auto-rotate effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     if (!window.google && !document.getElementById('google-identity')) {
@@ -192,132 +154,46 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
-  };
-
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Theme Toggle Button - Top Right */}
       <button
         onClick={toggleTheme}
         aria-label="Toggle theme"
-        className="fixed top-4 right-4 z-50 p-3 rounded-full bg-gray-100/80 dark:bg-black/80 backdrop-blur-sm border border-gray-300/50 dark:border-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors shadow-lg"
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-gray-100/10 hover:bg-gray-100/20 transition-colors"
       >
-        {isDark ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-gray-700" />}
+        {isDark ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5" />}
       </button>
 
-      {/* Left Panel - Domain-Specific Carousel */}
-      <div className="relative hidden lg:block overflow-hidden bg-black">
-        {/* Carousel Container */}
-        <div className="relative w-full h-full">
-          {carouselImages.map((image, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <img
-                src={isDark ? image.dark : image.light}
-                alt={image.title}
-                className="w-full h-full object-cover"
-              />
-              {/* Gradient overlay matching domain theme */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${image.gradient} opacity-30`} />
-              
-              {/* Additional dark overlay for better contrast */}
-              <div className="absolute inset-0 bg-black/40" />
-              
-              {/* Content */}
-              <div className="absolute bottom-8 left-8 z-20 max-w-lg text-white">
-                <div className="mb-4">
-                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-4">
-                    <span className="text-white/90 text-sm font-light">✨ Featured Domain</span>
-                  </div>
-                  <div className="flex items-center mb-3">
-                    {image.icon}
-                    <h2 className="text-4xl font-bold text-white ml-2">{image.title}</h2>
-                  </div>
-                  <p className="text-white/80 text-lg">{image.description}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Carousel Controls */}
-        <div className="absolute bottom-8 right-8 z-20 flex gap-2">
-          <button
-            onClick={prevSlide}
-            className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 text-white" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors"
-          >
-            <ChevronRight className="w-5 h-5 text-white" />
-          </button>
-        </div>
-
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
-          {carouselImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide ? 'bg-white w-6' : 'bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Right Panel - Login Form */}
-      <div className="flex flex-col gap-4 p-6 md:p-10 bg-gray-50 dark:bg-black">
+      {/* Left Panel - Login Form */}
+      <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-100">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              HackerEarth
-            </span>
+          <a href="/" className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-50">
+            <span>HackerEarth</span>
           </a>
         </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-full max-w-md">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                Welcome Back
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Sign in to access all learning domains
-              </p>
-            </div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-xs">
+            <form className={classNames("flex flex-col gap-6")} onSubmit={handleSubmit}>
+              <div className="flex flex-col items-center gap-2 text-center">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Login to your account</h1>
+                <p className="text-balance text-sm text-gray-500 dark:text-gray-300">Sign in with your NMAMIT Google account</p>
+              </div>
 
-            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               {/* Google Sign In Button */}
               <button 
                 type="button" 
-                className="inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none
-                           h-12 px-6 py-3 w-full
-                           border border-gray-300 dark:border-gray-700 
-                           bg-white dark:bg-gray-900
-                           hover:bg-gray-50 dark:hover:bg-gray-800
-                           text-gray-900 dark:text-gray-100
-                           shadow-sm hover:shadow-md transition-shadow" 
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background
+                              h-10 px-4 py-2 w-full
+                              border border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900
+                              text-gray-900 dark:text-gray-50" 
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 mr-2">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -339,44 +215,90 @@ const LoginPage: React.FC = () => {
                 {isLoading ? 'Signing in...' : 'Continue with Google'}
               </button>
 
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-700" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-50 dark:bg-black text-gray-500 dark:text-gray-400">
-                    NMAMIT Students Only
-                  </span>
-                </div>
-              </div>
-
               {/* Features */}
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="rounded-xl p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                  <Code className="w-6 h-6 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
-                  <p className="text-xs text-gray-600 dark:text-gray-300">Web Dev</p>
+              <div className="grid grid-cols-3 gap-4 text-center mt-6">
+                <div className="backdrop-blur-sm rounded-xl p-3 border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900">
+                  <Shield className="w-5 h-5 text-blue-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Secure</p>
                 </div>
-                <div className="rounded-xl p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                  <Cpu className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-2" />
-                  <p className="text-xs text-gray-600 dark:text-gray-300">DSA</p>
+                <div className="backdrop-blur-sm rounded-xl p-3 border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900">
+                  <CheckCircle className="w-5 h-5 text-green-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Verified</p>
                 </div>
-                <div className="rounded-xl p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                  <Brain className="w-6 h-6 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
-                  <p className="text-xs text-gray-600 dark:text-gray-300">Aptitude</p>
+                <div className="backdrop-blur-sm rounded-xl p-3 border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900">
+                  <User className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 dark:text-gray-300">NMAMIT Only</p>
                 </div>
               </div>
             </form>
-
-            {/* Footer */}
-            <div className="text-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Access all domains including Web Development, DSA, and Aptitude
-              </p>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Right Panel - Hero Section */}
+      <div className="relative hidden lg:block bg-gradient-to-br from-blue-900/80 via-purple-900/70 to-pink-800/60">
+        {/* Background pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--primary)_0%,_transparent_70%)] opacity-20"></div>
+        
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+        
+        {/* Hero Content */}
+        <div className="absolute bottom-8 left-8 z-20 max-w-lg">
+          <div className="text-left">
+            {/* Badge with glass effect */}
+            <div
+              className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md mb-6 relative border border-white/20"
+              style={{
+                filter: "url(#glass-effect)",
+              }}
+            >
+              <div className="absolute top-0 left-2 right-2 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <span className="text-white/90 text-sm font-light relative z-10">✨ HackerEarth Community</span>
+            </div>
+
+            {/* Main Heading */}
+            <h1 className="text-5xl md:text-6xl md:leading-16 tracking-tight font-light text-white mb-6">
+              <span className="font-medium italic">Code, Compete, Conquer</span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-sm font-light text-white/80 mb-8 leading-relaxed max-w-md">
+              Take on coding challenges, sharpen your skills, and climb the leaderboard. Push your limits with every problem you solve.
+            </p>
+
+            {/* Buttons with glass effect */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div 
+                className="px-8 py-3 rounded-full bg-transparent border border-white/30 text-white font-normal text-sm transition-all duration-200 hover:bg-white/10 hover:border-white/50 cursor-pointer backdrop-blur-sm"
+                style={{ filter: "url(#glass-effect)" }}
+              >
+                Learn More
+              </div>
+              <div 
+                className="px-8 py-3 rounded-full bg-white/90 text-black font-normal text-sm transition-all duration-200 hover:bg-white cursor-pointer backdrop-blur-sm"
+                style={{ filter: "url(#glass-effect)" }}
+              >
+                Join Community
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating elements */}
+        <div className="absolute top-1/4 right-1/4 w-16 h-16 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-1/3 left-1/3 w-24 h-24 bg-purple-500/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-2000"></div>
+      </div>
+
+      {/* SVG filter for glass effect */}
+      <svg width="0" height="0" className="absolute">
+        <filter id="glass-effect" x="0" y="0" width="100%" height="100%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="glass" />
+          <feBlend in="SourceGraphic" in2="glass" />
+        </filter>
+      </svg>
     </div>
   );
 };

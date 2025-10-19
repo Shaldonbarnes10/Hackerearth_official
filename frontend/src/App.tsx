@@ -8,7 +8,6 @@ import Navbar from "./components/Navbar";
 import PastEvents from "./pages/Events";
 import Team from "./pages/Team";
 import Domains from "./pages/Domains";
-import BlogPostPage from "./pages/BlogPostPage";
 import Leaderboard from "./pages/Leaderboard";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -55,7 +54,6 @@ function AppWrapper() {
           <Route path="/events" element={<PastEvents />} />
           <Route path="/team" element={<Team />} />
           <Route path="/domains" element={<Domains />} />
-          <Route path="/domains/:slug" element={<BlogPostPage />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
